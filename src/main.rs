@@ -29,6 +29,8 @@ async fn timer() {
 
     let user_inputs: i32 = use_input();
 
+
+
     _m += 1;
 
 
@@ -42,7 +44,22 @@ async fn timer() {
         printing!(utils::chosen_choice("Option: 1".to_string()));
     }
 
+
     while index > 0 {
+
+        if user_inputs > 1 {
+            printing!("\nEnter Option Zero | One: ".to_uppercase());
+
+            let user_input: i32 = use_input();
+
+            if index == 60 * user_input {
+                win_beep::beep_with_hz_and_millis(3000 / 3000, 1000);
+                printing!("Done".to_uppercase());
+                printing!(format!("{}", "Status: Finished".to_uppercase()));
+                process::exit(0);
+            }
+        }
+
         if user_inputs == 0 {
 
             tokio::time::sleep(Duration::from_millis(1000 / 2)).await;
@@ -71,13 +88,13 @@ struct CountDown<B> {
 }
 
 trait CountPairs {
-    fn count(&mut self) -> Self;
+    fn _count(&mut self) -> Self;
 
     fn is_running(&mut self) -> bool;
 }
 
 impl CountPairs for CountDown<bool> {
-    fn count(&mut self) -> Self {
+    fn _count(&mut self) -> Self {
         let count: CountDown<bool> = CountDown {
             counter: true,
         };
@@ -100,6 +117,57 @@ struct LinesUI {
 
 trait ShownUILiner {
     fn show_line(&mut self) -> Self;
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct UserOptionName<T, B> {
+    owner_name: T,
+    is_shown: B,
+}
+
+trait UserOptions {
+    fn get_name_owner(&mut self) -> Self;
+    fn is_shown(&mut self) -> Self;
+}
+
+impl UserOptions for UserOptionName<String, bool> {
+    fn get_name_owner(&mut self) -> Self {
+
+        let a: UserOptionName<String, bool> = UserOptionName {
+            owner_name: String::from(""),
+            is_shown: true
+        };
+
+        if self.is_shown {
+
+            let l: UserOptionName<String, bool> = UserOptionName {
+                owner_name: String::from("Ryan, James".to_uppercase()),
+                is_shown: true
+            };
+
+            return l
+        }
+
+        a
+    }
+
+    fn is_shown(&mut self) -> Self {
+        let a: UserOptionName<String, bool> = UserOptionName {
+            owner_name: String::from(""),
+            is_shown: true
+        };
+
+        if self.is_shown {
+            let l: UserOptionName<String, bool> = UserOptionName {
+                owner_name: String::from(""),
+                is_shown: true
+            };
+
+            return l
+        }
+
+        a
+    }
 }
 
 impl ShownUILiner for LinesUI {
@@ -129,22 +197,29 @@ async fn main() {
     };
 
     if CountDown::is_running(&mut run) == truth() {
-
-        let mut line = LinesUI {
-            line: "--".to_string()
+        let mut user_name: UserOptionName<String, bool> = UserOptionName {
+            is_shown: truth(),
+            owner_name: String::from("Ryan, James".to_uppercase()),
         };
 
+        if user_name.is_shown().is_shown {
+            println!("{}", format!("App Created By: {}", user_name.get_name_owner().owner_name));
 
-        LinesUI::show_line(&mut line);
-        timer().await;
-        LinesUI::show_line(&mut line);
+            let mut line = LinesUI {
+                line: "--".to_string()
+            };
 
-        loop {
 
-            tokio::spawn(async move {
-                stdin().read(&mut [0u8]).unwrap();
-            });
+            LinesUI::show_line(&mut line);
+            timer().await;
+            LinesUI::show_line(&mut line);
+
+            loop {
+                tokio::spawn(async move {
+                    stdin().read(&mut [0u8]).unwrap();
+                });
+            }
+
         }
-
     }
 }
