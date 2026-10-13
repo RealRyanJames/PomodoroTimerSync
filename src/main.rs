@@ -21,6 +21,40 @@ pub mod utils {
     }
 }
 
+#[derive(Debug)]
+struct MessageMainUI {
+    is_text_shown: bool,
+    text: String,
+    end_ui: String
+}
+
+trait MessageMainUser {
+    fn set_text(&mut self, text: &str) -> ();
+    fn get_text(&mut self) -> Self;
+}
+
+impl MessageMainUser for MessageMainUI {
+    fn set_text(&mut self, text: &str) -> () {
+        let message_ui: MessageMainUI = MessageMainUI {
+            is_text_shown: true,
+            text: text.to_string(),
+            end_ui: "".to_string(),
+        };
+
+        self.text = message_ui.text
+    }
+
+    fn get_text(&mut self) -> Self {
+        let message_ui: MessageMainUI = MessageMainUI {
+            is_text_shown: true,
+            text: self.text.clone(),
+            end_ui: "".to_string(),
+        };
+
+        message_ui
+    }
+}
+
 async fn timer() {
     let count = types::setup_selection_packet();
     let mut _m = count;
@@ -29,10 +63,7 @@ async fn timer() {
 
     let user_inputs: i32 = use_input();
 
-
-
     _m += 1;
-
 
     let index: i32 = count + 1;
 
@@ -132,14 +163,12 @@ trait UserOptions {
 
 impl UserOptions for UserOptionName<String, bool> {
     fn get_name_owner(&mut self) -> Self {
-
         let a: UserOptionName<String, bool> = UserOptionName {
             owner_name: String::from(""),
             is_shown: true
         };
 
         if self.is_shown {
-
             let l: UserOptionName<String, bool> = UserOptionName {
                 owner_name: String::from("Ryan, James".to_uppercase()),
                 is_shown: true
@@ -199,7 +228,7 @@ async fn main() {
     if CountDown::is_running(&mut run) == truth() {
         let mut user_name: UserOptionName<String, bool> = UserOptionName {
             is_shown: truth(),
-            owner_name: String::from("Ryan, James".to_uppercase()),
+            owner_name: String::from("Ryan, James".to_uppercase() + "\n"),
         };
 
         if user_name.is_shown().is_shown {
@@ -209,17 +238,39 @@ async fn main() {
                 line: "--".to_string()
             };
 
-
-            LinesUI::show_line(&mut line);
-            timer().await;
+            let mut steps_str = String::new();
             LinesUI::show_line(&mut line);
 
-            loop {
-                tokio::spawn(async move {
-                    stdin().read(&mut [0u8]).unwrap();
-                });
+            println!("{}\n", format!("\n{}", "Enter /A For About".to_uppercase()));
+            stdin().read_line(&mut steps_str).unwrap();
+
+            if steps_str.is_empty() {
+                println!("{}", format!("{}", "Empty".to_uppercase()))
             }
+            if steps_str.contains("/A") {
+                let mut message: MessageMainUI = MessageMainUI {
+                    is_text_shown: true,
+                    text: "This Is An Application That Allows Users
+                    \nEnter a Value and Get Back A Timer for Productivity".to_string(),
+                    end_ui: "".to_string(),
+                };
 
+                message.set_text(&*message.text.clone());
+
+                println!("{}", format!("{}", message.get_text().text))
+            } else {
+                LinesUI::show_line(&mut line);
+
+                LinesUI::show_line(&mut line);
+                timer().await;
+                LinesUI::show_line(&mut line);
+
+                loop {
+                    tokio::spawn(async move {
+                        stdin().read(&mut [0u8]).unwrap();
+                    });
+                }
+            }
         }
     }
 }
