@@ -65,14 +65,54 @@ async fn timer() {
     }
 }
 
+#[derive(Debug)]
+struct CountDown<B> {
+    counter: B
+}
+
+trait CountPairs {
+    fn count(&mut self) -> Self;
+
+    fn is_running(&mut self) -> bool;
+}
+
+impl CountPairs for CountDown<bool> {
+    fn count(&mut self) -> Self {
+        let count: CountDown<bool> = CountDown {
+            counter: true,
+        };
+
+        count
+    }
+
+    fn is_running(&mut self) -> bool {
+        if self.counter {
+            true;
+        }
+
+        false
+    }
+}
+
+fn truth() -> bool {
+    true
+}
+
 #[tokio::main]
 async fn main() {
+    let mut run: CountDown<bool> = CountDown {
+        counter: true
+    };
 
-    timer().await;
+    if CountDown::is_running(&mut run) == truth() {
+        timer().await;
 
-    loop {
-        tokio::spawn(async move {
-            stdin().read(&mut [0u8]).unwrap();
-        });
+        CountDown::count(&mut run);
+
+        loop {
+            tokio::spawn(async move {
+                stdin().read(&mut [0u8]).unwrap();
+            });
+        }
     }
 }
