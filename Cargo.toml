@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 tokio = { version = "1.53.2", features = ["full"] }
+win-beep = "1.0.3"

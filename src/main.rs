@@ -31,7 +31,8 @@ async fn timer() {
 
     _m += 1;
 
-    let mut index: i32 = count + 1;
+
+    let index: i32 = count + 1;
 
     printing!(format!("{}", "Status: Running".to_uppercase()));
 
@@ -43,19 +44,19 @@ async fn timer() {
 
     while index > 0 {
         if user_inputs == 0 {
-            index += 1;
 
             tokio::time::sleep(Duration::from_millis(1000 / 2)).await;
 
             if index == 60 * 2 {
+                win_beep::beep_with_hz_and_millis(3000 / 3000, 1000);
                 printing!("Done".to_uppercase());
                 printing!(format!("{}", "Status: Finished".to_uppercase()));
                 process::exit(0);
             }
         } else if user_inputs == 1 {
-            index += 1;
             tokio::time::sleep(Duration::from_millis(1000 / 2)).await;
             if index == 60 * 25 {
+                win_beep::beep_with_hz_and_millis(3000 / 3000, 1000);
                 printing!("Done".to_uppercase());
                 printing!(format!("{}", "Status: Finished".to_uppercase()));
                 process::exit(0);
