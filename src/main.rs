@@ -258,19 +258,16 @@ async fn main() {
                 message.set_text(&*message.text.clone());
 
                 println!("{}", format!("{}", message.get_text().text))
-            } else {
-                LinesUI::show_line(&mut line);
-
-                LinesUI::show_line(&mut line);
-                timer().await;
-                LinesUI::show_line(&mut line);
-
-                loop {
-                    tokio::spawn(async move {
-                        stdin().read(&mut [0u8]).unwrap();
-                    });
-                }
             }
+            LinesUI::show_line(&mut line);
+
+            LinesUI::show_line(&mut line);
+            timer().await;
+            LinesUI::show_line(&mut line);
+        }
+
+        loop {
+            stdin().read(&mut [0u8]).unwrap();
         }
     }
 }
