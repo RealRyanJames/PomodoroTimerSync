@@ -1,4 +1,4 @@
-use chrono::{DateTime, Local, Utc};
+use chrono::{DateTime, Utc};
 
 pub struct Now<Utc> {
     pub now: Utc,
@@ -21,7 +21,7 @@ impl NowData for Now<DateTime<Utc>> {
             minutes: self.minutes,
             days: self.days,
             months: self.months,
-            year: self.year
+            year: self.year,
         };
 
         now
