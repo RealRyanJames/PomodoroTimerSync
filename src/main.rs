@@ -23,15 +23,15 @@ pub mod utils {
 
 async fn timer() {
     let count = types::setup_selection_packet();
-    let mut _m = count as i32;
+    let mut _m = count;
 
     printing!(format!("{}", "Enter Option Zero | One: ".to_uppercase()));
 
-    let user_inputs: i32 = use_input() as i32;
+    let user_inputs: i32 = use_input();
 
     _m += 1;
 
-    let mut index: i32 = (count + 1) as i32;
+    let mut index: i32 = count + 1;
 
     printing!(format!("{}", "Status: Running".to_uppercase()));
 
@@ -45,7 +45,7 @@ async fn timer() {
         if user_inputs == 0 {
             index += 1;
 
-            std::thread::sleep(Duration::from_millis(1000 / 2));
+            tokio::time::sleep(Duration::from_millis(1000 / 2)).await;
 
             if index == 60 * 2 {
                 printing!("Done".to_uppercase());
@@ -54,7 +54,7 @@ async fn timer() {
             }
         } else if user_inputs == 1 {
             index += 1;
-            std::thread::sleep(Duration::from_millis(1000 / 2));
+            tokio::time::sleep(Duration::from_millis(1000 / 2)).await;
             if index == 60 * 25 {
                 printing!("Done".to_uppercase());
                 printing!(format!("{}", "Status: Finished".to_uppercase()));
@@ -66,6 +66,12 @@ async fn timer() {
 
 #[tokio::main]
 async fn main() {
+
     timer().await;
-    stdin().read(&mut [0u8]).unwrap();
+
+    loop {
+        tokio::spawn(async move {
+            stdin().read(&mut [0u8]).unwrap();
+        });
+    }
 }
