@@ -1,7 +1,8 @@
 use std::{ io::{ Read, stdin }, process::{ self }, time::Duration };
+use chrono::{DateTime, Timelike, Utc};
 
 mod types;
-
+mod ld_now;
 macro_rules! printing {
     ($msg:expr) => {
         println!("{}", $msg);
@@ -23,9 +24,9 @@ pub mod utils {
 
 #[derive(Debug)]
 struct MessageMainUI {
-    is_text_shown: bool,
+    _is_text_shown: bool,
     text: String,
-    end_ui: String
+    _end_ui: String
 }
 
 trait MessageMainUser {
@@ -36,9 +37,9 @@ trait MessageMainUser {
 impl MessageMainUser for MessageMainUI {
     fn set_text(&mut self, text: &str) -> () {
         let message_ui: MessageMainUI = MessageMainUI {
-            is_text_shown: true,
+            _is_text_shown: true,
             text: text.to_string(),
-            end_ui: "".to_string(),
+            _end_ui: "".to_string(),
         };
 
         self.text = message_ui.text
@@ -46,9 +47,9 @@ impl MessageMainUser for MessageMainUI {
 
     fn get_text(&mut self) -> Self {
         let message_ui: MessageMainUI = MessageMainUI {
-            is_text_shown: true,
+            _is_text_shown: true,
             text: self.text.clone(),
-            end_ui: "".to_string(),
+            _end_ui: "".to_string(),
         };
 
         message_ui
@@ -142,6 +143,7 @@ impl CountPairs for CountDown<bool> {
     }
 }
 
+
 struct LinesUI {
     line: String,
 }
@@ -215,6 +217,8 @@ impl ShownUILiner for LinesUI {
     }
 }
 
+
+
 fn truth() -> bool {
     true
 }
@@ -230,6 +234,32 @@ async fn main() {
             is_shown: truth(),
             owner_name: String::from("Ryan, James".to_uppercase() + "\n"),
         };
+
+
+        let now: ld_now::Now<DateTime<Utc>> = ld_now::Now {
+            now: Utc::now(),
+            hour: Utc::now(),
+            minutes: Utc::now(),
+            days: Utc::now(),
+            months: Utc::now(),
+            year: Utc::now(),
+        };
+
+        if now.now.hour() < 11 {
+
+            printing!(format!("{}", "Morning".to_uppercase()));
+        }
+
+        else if now.now.hour() > 12 || now.now.hour() < 17 {
+
+            printing!(format!("{}", "Good Afternoon".to_uppercase()));
+        }
+
+        else {
+
+            printing!(format!("{}", "Good Evening".to_uppercase()));
+        }
+
 
         if user_name.is_shown().is_shown {
             println!("{}", format!("App Created By: {}", user_name.get_name_owner().owner_name));
@@ -249,10 +279,10 @@ async fn main() {
             }
             if steps_str.contains("/A") {
                 let mut message: MessageMainUI = MessageMainUI {
-                    is_text_shown: true,
+                    _is_text_shown: true,
                     text: "This Is An Application That Allows Users
                     \nEnter a Value and Get Back A Timer for Productivity".to_string(),
-                    end_ui: "".to_string(),
+                    _end_ui: "".to_string(),
                 };
 
                 message.set_text(&*message.text.clone());
@@ -267,7 +297,9 @@ async fn main() {
         }
 
         loop {
-            stdin().read(&mut [0u8]).unwrap();
+            tokio::spawn(async move {
+                stdin().read(&mut [0u8]).unwrap();
+            });
         }
     }
 }
