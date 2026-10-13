@@ -25,7 +25,7 @@ async fn timer() {
     let count = types::setup_selection_packet();
     let mut _m = count;
 
-    printing!(format!("{}", "Enter Option Zero | One: ".to_uppercase()));
+    printing!("\nEnter Option Zero | One: ".to_uppercase());
 
     let user_inputs: i32 = use_input();
 
@@ -90,7 +90,31 @@ impl CountPairs for CountDown<bool> {
             true;
         }
 
-        false
+        true
+    }
+}
+
+struct LinesUI {
+    line: String,
+}
+
+trait ShownUILiner {
+    fn show_line(&mut self) -> Self;
+}
+
+impl ShownUILiner for LinesUI {
+    fn show_line(&mut self) -> Self {
+        let l = LinesUI {
+            line: "--".to_string()
+        };
+
+        if l.line.len() > 0 {
+            for _ in 1..(20 * 2) * 2 / 5 {
+                print!("{}", format!("{}", l.line.to_string()))
+            }
+        };
+
+        l
     }
 }
 
@@ -105,14 +129,22 @@ async fn main() {
     };
 
     if CountDown::is_running(&mut run) == truth() {
-        timer().await;
 
-        CountDown::count(&mut run);
+        let mut line = LinesUI {
+            line: "--".to_string()
+        };
+
+
+        LinesUI::show_line(&mut line);
+        timer().await;
+        LinesUI::show_line(&mut line);
 
         loop {
+
             tokio::spawn(async move {
                 stdin().read(&mut [0u8]).unwrap();
             });
         }
+
     }
 }
