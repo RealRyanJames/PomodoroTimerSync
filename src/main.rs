@@ -1,11 +1,10 @@
-use chrono::{DateTime, Timelike, Utc};
+use chrono::{DateTime, Datelike, Timelike, Utc};
 use std::{
     io::{Read, stdin},
     process::{self},
     time::Duration,
 };
 
-mod functions;
 mod getters;
 mod ld_now;
 mod types;
@@ -244,7 +243,13 @@ async fn main() {
             owner_name: String::from("Ryan, James".to_uppercase() + "\n"),
         };
 
-        printing!(format!("{:?}", getters::date_getter::get_date()));
+        printing!(format!(
+            "{} {}/{}/{}",
+            getters::date_getter::get_date().weekday(),
+            getters::date_getter::get_date().month(),
+            getters::date_getter::get_date().day(),
+            getters::date_getter::get_date().year(),
+        ));
 
         let now: ld_now::Now<DateTime<Utc>> = ld_now::Now {
             now: Utc::now(),
@@ -276,44 +281,40 @@ async fn main() {
             let mut steps_str = String::new();
             LinesUI::show_line(&mut line);
 
-            let type_name: TypesNames<bool> = TypesNames { running: true };
+            if steps_str.contains("Q") || steps_str.contains("Q") {
+                exit_quit::quit_win();
+            }
 
-            if type_name.running {
-                if steps_str.contains("Q") || steps_str.contains("Q") {
-                    exit_quit::quit_win();
-                }
+            println!("{}\n", format!("\n{}", "Enter /A For About".to_uppercase()));
+            stdin().read_line(&mut steps_str).unwrap();
 
-                println!("{}\n", format!("\n{}", "Enter /A For About".to_uppercase()));
-                stdin().read_line(&mut steps_str).unwrap();
-
-                if steps_str.is_empty() {
-                    println!("{}", format!("{}", "Empty".to_uppercase()))
-                }
-                if steps_str.contains("/A") {
-                    let mut message: MessageMainUI = MessageMainUI {
-                        _is_text_shown: true,
-                        text: "This Is An Application That Allows Users
+            if steps_str.is_empty() {
+                println!("{}", format!("{}", "Empty".to_uppercase()))
+            }
+            if steps_str.contains("/A") {
+                let mut message: MessageMainUI = MessageMainUI {
+                    _is_text_shown: true,
+                    text: "This Is An Application That Allows Users
                     \nEnter a Value and Get Back A Timer for Productivity"
-                            .to_string(),
-                        _end_ui: "".to_string(),
-                    };
+                        .to_string(),
+                    _end_ui: "".to_string(),
+                };
 
-                    message.set_text(&*message.text.clone());
+                message.set_text(&*message.text.clone());
 
-                    println!("{}", format!("{}", message.get_text().text))
-                }
-                LinesUI::show_line(&mut line);
-
-                LinesUI::show_line(&mut line);
-                timer().await;
-                LinesUI::show_line(&mut line);
+                println!("{}", format!("{}", message.get_text().text))
             }
+            LinesUI::show_line(&mut line);
 
-            loop {
-                tokio::spawn(async move {
-                    stdin().read(&mut [0u8]).unwrap();
-                });
-            }
+            LinesUI::show_line(&mut line);
+            timer().await;
+            LinesUI::show_line(&mut line);
+        }
+
+        loop {
+            tokio::spawn(async move {
+                stdin().read(&mut [0u8]).unwrap();
+            });
         }
     }
 }

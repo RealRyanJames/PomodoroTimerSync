@@ -1,7 +1,7 @@
 pub mod date_getter {
-    use chrono::Local;
+    use chrono::{DateTime, Utc};
 
-    pub fn get_date() -> () {
-        Local::now();
+    pub fn get_date() -> DateTime<Utc> {
+        Utc::now()
     }
 }
